@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>屬靈恩賜評測 - 我的結果</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
+
+  <!-- 頂部橫幅 -->
+  <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-16">
+    <div class="container mx-auto px-4 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">
+        我相信上帝賜給我的恩賜是
+      </h1>
+      
+      <p class="text-xl mb-8 max-w-3xl mx-auto">
+        神賜給你特別的恩賜組合。這個組合使你能夠在祂的國度中發揮獨特的影響力，成為祝福他人的管道。
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-4">
+        <button onclick="downloadReport()" 
+                class="bg-white text-purple-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition-all shadow-lg">
+          📥 下載完整報告
+        </button>
+        <button onclick="shareResults()" 
+                class="bg-purple-500 text-white px-8 py-3 rounded-full font-bold hover:bg-purple-400 transition-all shadow-lg">
+          🔗 分享結果
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主要內容 -->
+  <div class="container mx-auto px-4 py-12">
+    
+    <!-- 前 5 大恩賜 -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+        <span class="mr-3">🏆</span>
+        你的前 5 大恩賜
+      </h2>
+      
+      <div id="top-gifts-list" class="space-y-6">
+        載入中...
+      </div>
+    </div>
+
+    <!-- 反思問題 -->
+    <div class="bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-8 mb-8">
+      <p class="text-xl text-gray-800 text-center font-medium">
+        讓我們反思，我可以怎樣使用這些恩賜去服事別人？
+      </p>
+    </div>
+
+    <!-- 重新測驗按鈕 -->
+    <div class="text-center">
+      <button onclick="resetTest()" 
+              class="bg-gray-500 text-white px-8 py-3 rounded-full font-bold hover:bg-gray-600 transition-all">
+        🔄 重新測驗
+      </button>
+    </div>
+
+  </div>
+
+  <!-- 頁尾 -->
+  <footer class="bg-gray-800 text-white py-6 mt-12">
+    <div class="container mx-auto px-4 text-center">
+      <p>© 活出生命特質 | 願神使用你的恩賜，成為祂手中貴重的器皿</p>
+    </div>
+  </footer>
+
+  <!-- 載入 JS -->
+  <script src="js/gifts-data.js"></script>
+  <script>
+    // 恩賜完整描述
+    const GIFT_DESCRIPTIONS = {
+      'administration': '從上帝而來的特殊才能，為要服事並強化基督的身體；能有效地調度人力和資源，有效地達到事工的目標。',
+      'apostle': '從上帝而來的特殊才能，為要服事並強化基督的身體；能夠開展並帶領新的事工項目，以推進上帝的工作並擴展祂的國度。「使徒」一詞在希臘原文中的意思是「被差遣的人」，是一位受差遣並帶有權威的人，或是奉派為大使的人。',
+      'discernment': '從上帝而來的特殊才能，為要服事並強化基督的身體；在聽到的信息中，或是在待人處事中，能夠識別真理或錯誤。',
+      'encouragement': '從上帝而來的特殊才能，為要服事並強化基督的身體；透過啟發、鼓勵、輔導和授權，幫助他人活出以上帝為中心的生活。',
+      'evangelism': '從上帝而來的特殊才能，為要服事並強化基督的身體；能與他人分享基督的愛，吸引他們回應並接受上帝所賜的免費禮物——永生。',
+      'faith': '從上帝而來的特殊才能，為要服事並強化基督的身體；為成就上帝的旨意而踏出信心的腳步，並且深信祂會在整個過程中解決各樣的困難。',
+      'giving': '從上帝而來的特殊才能，為要服事並強化基督的身體；在十一奉獻之外，甘心樂意為不同的天國事工，提供金錢和物質上的援助。',
+      'healing': '從上帝而來的特殊才能，為要服事並強化基督的身體；用傳統醫學或自然醫治以外的方法，去幫助生病、受傷或受苦的人得到醫治和康復。',
+      'helps': '從上帝而來的特殊才能，為要服事並強化基督的身體；透過幫助他人來達到榮神益人的目標。這種才能有時被稱為「助人」或「服務」的恩賜。',
+      'hospitality': '從上帝而來的特殊才能，為要服事並強化基督的身體；能提供溫暖和友善的環境，讓人有賓至如歸的感覺。',
+      'interpretation': '從上帝而來的特殊才能，為要服事並強化基督的身體；在特定的時間裏，能明白別人用某一種特殊的語言來傳講上帝的信息，而那種語言是在場的人都不懂的。',
+      'knowledge': '從上帝而來的特殊才能，為要服事並強化基督的身體；能夠用適當的方式將上帝的真理傳達清楚，使人關心公義、注意誠實和增加了解。',
+      'leadership': '從上帝而來的特殊才能，為要服事並強化基督的身體；能提出遠見，激勵他人的靈命成長；懂得運用策略去完成上帝的旨意。',
+      'mercy': '從上帝而來的特殊才能，為要服事並強化基督的身體；很願意去服事那些在生理、心理、靈裏或在人際關係上受到傷害的人；常常以愛心、關心、同情和恩慈來對待那些受傷的人。',
+      'miracles': '從上帝而來的特殊才能，為要服事並強化基督的身體；藉著超自然的行動，彰顯上帝的才能。',
+      'shepherding': '從上帝而來的特殊才能，為要服事並強化基督的身體；願意為一群信徒負擔起培育靈性的責任，並裝備他們活出以基督為中心的生活。「牧養」是用來形容這種特別恩賜的另一個詞。',
+      'prophecy': '從上帝而來的特殊才能，為要服事並強化基督的身體；傳講由上帝而來的信息，用以安慰、鼓勵、引導、警戒人或揭露罪惡，讓人能悔改並在靈裏成長。根據希臘原文，這個詞的意思是「傳講真理」。先知的恩賜包括「宣講」（講道）和「預言」（啟示）兩方面。',
+      'teaching': '從上帝而來的特殊才能，為要服事並強化基督的身體；用適當的方法教導正確的信仰內容，使信徒得到正確和成熟的屬靈教導。',
+      'tongues': '從上帝而來的特殊才能，為要服事並強化基督的身體；能用自己都不明白的特殊言語去傳達上帝的信息。',
+      'wisdom': '從上帝而來的特殊才能，為要服事並強化基督的身體；能照著上帝的旨意作智慧的決定，並以正確的忠告來輔導他人。'
+    };
+
+    // 載入結果
+    function loadResults() {
+      const resultsData = JSON.parse(localStorage.getItem('sg-test-results'));
+      
+      if (!resultsData) {
+        alert('找不到測驗結果，請先完成測驗。');
+        window.location.href = 'test.html';
+        return;
+      }
+
+      renderTopGifts(resultsData.topGifts);
+    }
+
+    // 渲染前5大恩賜
+    function renderTopGifts(topGifts) {
+      const container = document.getElementById('top-gifts-list');
+      
+      container.innerHTML = topGifts.map((gift, index) => `
+        <div class="border-l-4 border-purple-500 pl-6 py-4">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-2xl font-bold text-gray-800">
+              ${index + 1}. ${gift.icon} ${gift.name.zh}
+            </h3>
+            <span class="text-lg font-semibold text-purple-600">
+              ${gift.totalScore}/15 (${gift.percentage}%)
+            </span>
+          </div>
+          
+          <div class="w-full bg-gray-200 rounded-full h-3 mb-3">
+            <div class="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-1000" 
+                 style="width: ${gift.percentage}%"></div>
+          </div>
+          
+          <p class="text-gray-700 leading-relaxed">
+            ${GIFT_DESCRIPTIONS[gift.id] || gift.description}
+          </p>
+        </div>
+      `).join('');
+    }
+
+    // 下載報告
+    function downloadReport() {
+      const resultsData = JSON.parse(localStorage.getItem('sg-test-results'));
+      if (!resultsData) {
+        alert('找不到測驗結果');
+        return;
+      }
+
+      let report = '='.repeat(60) + '\n';
+      report += '屬靈恩賜評測報告\n';
+      report += 'Spiritual Gifts Assessment Report\n';
+      report += '='.repeat(60) + '\n\n';
+
+      report += `測驗日期：${new Date(resultsData.timestamp).toLocaleDateString('zh-TW')}\n`;
+      report += `完成時間：${new Date(resultsData.timestamp).toLocaleTimeString('zh-TW')}\n\n`;
+
+      report += '【前 5 大恩賜】\n';
+      report += '-'.repeat(60) + '\n\n';
+
+      resultsData.topGifts.forEach((gift, index) => {
+        report += `${index + 1}. ${gift.icon} ${gift.name.zh}\n`;
+        report += `   得分：${gift.totalScore}/15 (${gift.percentage}%)\n\n`;
+        report += `   ${GIFT_DESCRIPTIONS[gift.id] || gift.description}\n\n`;
+        report += '-'.repeat(60) + '\n\n';
+      });
+
+      report += '讓我們反思，我可以怎樣使用這些恩賜去服事別人？\n\n';
+      report += '='.repeat(60) + '\n';
+      report += '© 活出生命特質 | 願神使用你的恩賜，成為祂手中貴重的器皿\n';
+      report += '='.repeat(60) + '\n';
+
+      // 下載
+      const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `屬靈恩賜報告_${new Date().toLocaleDateString('zh-TW')}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // 分享結果
+    function shareResults() {
+      const resultsData = JSON.parse(localStorage.getItem('sg-test-results'));
+      if (!resultsData) {
+        alert('找不到測驗結果');
+        return;
+      }
+
+      let shareText = '🎯 我完成了屬靈恩賜評測！\n\n';
+      shareText += '【前 5 大恩賜】\n';
+      
+      resultsData.topGifts.forEach((gift, index) => {
+        shareText += `${index + 1}. ${gift.icon} ${gift.name.zh}\n`;
+        shareText += `   得分：${gift.totalScore}/15 (${gift.percentage}%)\n`;
+        shareText += `   ${GIFT_DESCRIPTIONS[gift.id] || gift.description}\n\n`;
+      });
+      
+      shareText += '你也來測測看吧！';
+
+      // 嘗試使用原生分享 API
+      if (navigator.share) {
+        navigator.share({
+          title: '我的屬靈恩賜',
+          text: shareText
+        }).catch(err => console.log('分享取消'));
+      } else {
+        // 備用方案：複製到剪貼簿
+        navigator.clipboard.writeText(shareText).then(() => {
+          alert('✓ 結果已複製到剪貼簿！\n你可以貼到任何地方分享。');
+        }).catch(() => {
+          // 最後備用方案：顯示文字讓使用者手動複製
+          prompt('請複製以下文字：', shareText);
+        });
+      }
+    }
+
+    // 重新測驗
+    function resetTest() {
+      if (confirm('確定要重新測驗嗎？目前的結果將會被清除。')) {
+        localStorage.removeItem('sg-test-progress');
+        localStorage.removeItem('sg-test-results');
+        window.location.href = 'test.html';
+      }
+    }
+
+    // 頁面載入時執行
+    window.addEventListener('DOMContentLoaded', loadResults);
+  </script>
+
+</body>
+</html>
